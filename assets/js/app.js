@@ -27,9 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const exampleButtons = document.getElementById('example-buttons');
 
         // --- [v3] Fetch Example Shlokas from JSON ---
-        // I have updated this URL to a new file with the CORRECTED Sragdhara and Arya examples.
-        // You must create a new "shlokas_v2.json" file in your repo with the content I provide at the end.
-        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas_v2.json";
+        // THIS IS A NEW URL. YOU MUST CREATE "shlokas_v3.json"
+        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas_v3.json";
 
         fetch(shlokasUrl)
             .then(response => {
@@ -407,28 +406,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             currentSyllable += nextChar;
                             i++;
 
-                            // --- [BUG FIX] ---
-                            // Check for C+Matra + C + Vira case, e.g., "स्या" + "त्" + "्"
+                            // [FIX] Check for C+Matra + C + Vira case, e.g., "स्या" + "त्" + "्"
                             let postMatraChar = (i < line.length) ? line[i] : '';
                             let postMatraNext = (i + 1 < line.length) ? line[i+1] : '';
 
                             if (isConsonant(postMatraChar) && isVirama(postMatraNext)) {
                                 let postMatraNextNext = (i + 2 < line.length) ? line[i+2] : '';
-                                
-                                // If the C+Vira is followed by ANOTHER consonant, it's a new syllable (e.g., "वि" + "श्वं")
-                                if (isConsonant(postMatraNextNext)) {
-                                     break; // Syllable is complete ("वि")
-                                } else {
-                                    // This is a C+Vira ending (e.g., "स्यात्" or "स्यात्।"), append it
+                                if (!isConsonant(postMatraNextNext)) {
+                                    // This is a C+Vira ending, append it to the current syllable
                                     currentSyllable += postMatraChar + postMatraNext;
                                     i += 2;
-                                    break; // Syllable is complete ("स्यात्")
                                 }
-                            } else {
-                                break; // Syllable is complete (e.g., "का" or "वि" before "श्व")
+                                // If it *is* followed by a consonant (e.g. "वि" + "श्व"),
+                                // we don't append, we just break.
                             }
-                            // --- [END BUG FIX] ---
-
+                            
+                            break; // Syllable is complete
                         } else {
                             // Inherent 'a' is implied.
                             
@@ -441,17 +434,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 break; // Break inner loop, the current syllable is complete.
                             }
                             
-                            // [FIX] Check for C + C + Vira case, e.g., "व" + "न्" + "्"
-                            // Make sure it's not the start of another conjunct
-                            if (isConsonant(nextChar) && isVirama(nextNextChar) && !isConsonant(nextNextNextChar)) {
-                                // This is the C+C+Vira case (and not a conjunct start)
-                                currentSyllable += nextChar + nextNextChar; // e.g., currentSyllable becomes "वन्"
-                                i += 2;
-                                break; // Syllable is complete
-                            } else {
-                                // Inherent 'a' is implied, and this is the start of the next syllable.
-                                break;
-                            }
+                            // [BUGGY FIX REMOVED] The C+C+Vira case was causing
+                            // "श्व" + "म्" to merge. It is now gone.
+                            
+                            // Inherent 'a' is implied, and this is the start of the next syllable.
+                            break;
                         }
                     } // END OF INNER LOOP
 
@@ -494,11 +481,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             };
             
+            // --- [BUG FIX 2] ---
             // Helper to check if a syllable *starts* with a conjunct
             const startsWithConjunct = (syl) => {
-                // C+Virama+C... (Virama is not at the end)
-                return syl.includes('\u094D') && !/\u094D$/.test(syl);
+                // A syllable starts with a conjunct if a virama (्) exists,
+                // and it is NOT the *last* character.
+                // e.g. "श्व" (ś+्+va) is true. "जन्" (j+a+n+्) is false.
+                const viramaIndex = syl.indexOf('\u094D');
+                return (viramaIndex > -1 && viramaIndex < syl.length - 1);
             };
+            // --- [END BUG FIX 2] ---
+
 
             for (let i = 0; i < syllables.length; i++) {
                 const syllable = syllables[i];
@@ -857,7 +850,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 'kṛṣṇa' (G-G) (padanta)
             test("Vocalic Short (कृष्ण)", "कृष्ण", ["कृ", "ष्ण"], ["G", "G"]);
             // 'pitṝṇām' (L-G-G)
-            test("Vocalic Long (पितॄणाम्)", "पितॄणाम्", ["पि", "तॄ", "णाम्"], ["L", "G", "G"]);
+            test("Vocalic Long (पितॄणाम्)", "पितSृणाम्", ["पि", "तॄ", "णाम्"], ["L", "G", "G"]);
             // 'kḷptam' (G-G)
             test("Vocalic Short L (कॢप्तम्)", "कॢप्तम्", ["कॢ", "प्तम्"], ["G", "G"]);
 
@@ -870,8 +863,11 @@ document.addEventListener('DOMContentLoaded', function() {
             test("Conjunct (उष्ट्र)", "उष्ट्र", ["उ", "ष्ट्र"], ["G","G"]);
             
             console.log("%c--- 6. [NEW] Sragdharā Bug Test ---", "font-weight: bold; margin-top: 10px;");
-            // ...vyāpya viśvaṁ
+            // ...vyāpya viśvaṁ (with anusvara)
             test("Sragdharā Bug (व्याप्य विश्वं)", "व्याप्य विश्वं", ["व्या", "प्य", "वि", "श्वं"], ["G", "L", "G", "G"]);
+            // ...vyāpya viśvam (with final 'm')
+            test("Sragdharā Bug (व्याप्य विश्वम्)", "व्याप्य विश्वम्", ["व्या", "प्य", "वि", "श्व", "म्"], ["G", "L", "G", "L", "G"]);
+
 
             console.log("---");
             if (failed > 0) {
