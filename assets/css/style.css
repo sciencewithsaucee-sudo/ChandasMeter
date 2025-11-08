@@ -343,3 +343,42 @@ table th:nth-child(9) { width: 20%; }
   .analyze-button-container .button-group { flex-direction: column; }
   .hero-buttons { flex-direction: column; }
 }
+/* ===== Fix button colors for GitHub Pages ===== */
+
+/* Get Started – solid green, curved */
+.hero-buttons .btn.btn-primary {
+  background:#006400 !important;
+  border-color:#006400 !important;
+  color:#ffffff !important;
+  border-radius:9999px !important;
+}
+.hero-buttons .btn.btn-primary:hover {
+  background:#004d00 !important;
+  border-color:#004d00 !important;
+}
+
+/* How It Works – white bg, green border, normal corners */
+.hero-buttons .btn.btn-outline {
+  background:#ffffff !important;
+  color:#006400 !important;
+  border:2px solid #006400 !important;
+  border-radius:6px !important; /* not curved */
+}
+.hero-buttons .btn.btn-outline:hover {
+  background:#f0fdf4 !important;
+  color:#004d00 !important;
+  border-color:#004d00 !important;
+}
+
+/* Example buttons (Anushtubh etc.) – white bg, curved green border */
+#example-buttons .btn.btn-outline {
+  background:#ffffff !important;
+  color:#006400 !important;
+  border:2px solid #006400 !important;
+  border-radius:9999px !important; /* curved */
+}
+#example-buttons .btn.btn-outline:hover {
+  background:#f0fdf4 !important;
+  color:#004d00 !important;
+  border-color:#004d00 !important;
+}
