@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- [v3] Fetch Example Shlokas from JSON ---
         // This URL must point to the "shlokas_v3.json" file
-        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas_v3.json";
+        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas.json";
 
         fetch(shlokasUrl)
             .then(response => {
