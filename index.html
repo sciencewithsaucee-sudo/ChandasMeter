@@ -51,6 +51,43 @@
   color:#004d00 !important;
   border-color:#004d00 !important;
 }
+/* === Final fix: Analyze, Clear All, Run Unit Tests – green, not curved === */
+#analyzeButton.btn,
+#clearButton.btn,
+#runTestsButton.btn {
+  background-color: #006400 !important;
+  color: #ffffff !important;
+  border: 2px solid #006400 !important;
+  border-radius: 6px !important;   /* normal rectangle corners */
+  font-weight: 600 !important;
+  padding: 12px 28px !important;
+  box-shadow: var(--shadow-sm);
+  text-transform: none !important;
+  transition: all 0.25s ease !important;
+}
+
+/* Hover – darker green */
+#analyzeButton.btn:hover,
+#clearButton.btn:hover,
+#runTestsButton.btn:hover {
+  background-color: #004d00 !important;
+  border-color: #004d00 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Icons and inner text white */
+#analyzeButton.btn svg,
+#clearButton.btn svg,
+#runTestsButton.btn svg,
+#analyzeButton.btn *,
+#clearButton.btn *,
+#runTestsButton.btn * {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
 </style>
     
     <!-- Link to the CSS file from the GitHub repo -->
