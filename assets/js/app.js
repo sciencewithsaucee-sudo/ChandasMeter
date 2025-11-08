@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'Sragdharā': {
                 syllables: 21,
                 pattern: 'G-G-G-G-L-G-G-L-L-L-L-L-L-G-G-L-G-G-L-G-G', // ma-ra-bha-na-ya-ya-ya
-                gana: 'ma-ra-bha-na-ya-ya-ya (म-र-भ-н-य-य-य)'
+                gana: 'ma-ra-bha-na-ya-ya-ya (म-र-भ-न-य-य-य)'
             }
         };
 
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let nextNextNextChar = (i + 2 < line.length) ? line[i+2] : '';
                             if (isConsonant(nextChar) && isVirama(nextNextChar) && !isConsonant(nextNextNextChar)) {
                                 // This is the C+C+Vira case (and not a conjunct start)
-                                currentSyllable += nextChar + nextNextChar; // e.g., currentSyllable becomes "सन्"
+                                currentSyllable += nextChar + nextNextChar; // e.g., currentSyllable becomes "वन्"
                                 i += 2;
                                 break; // Syllable is complete
                             } else {
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 'rājan' (G-G)
             test("Final Virama (राजन्)", "राजन्", ["रा", "जन्"], ["G", "G"]);
             // 'paśyan' (L-G)
-            test("Final Virama (पश्यन्)", "पश्यन्", ["प", "श्यन्"], ["L",G"]);
+            test("Final Virama (पश्यन्)", "पश्यन्", ["प", "श्यन्"], ["L", "G"]);
 
             console.log("%c--- 3. Anusvara/Visarga ---", "font-weight: bold; margin-top: 10px;");
             // 'kṛṣṇaṁ' (G-G)
@@ -902,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ...vyāpya viśvaṁ (with anusvara)
             test("Sragdharā Bug (व्याप्य विश्वं)", "व्याप्य विश्वं", ["व्या", "प्य", "वि", "श्वं"], ["G", "L", "G", "G"]);
             // ...vyāpya viśvam (with final 'm')
-            test("Sragdharā Bug (व्याप्य विश्वम्)", "व्याप्य विश्वम्", ["व्या", "प्य", "वि", "श्व", "म्"], ["G", "L","G", "L", "G"]);
+            test("Sragdharā Bug (व्याप्य विश्वम्)", "व्याप्य विश्वम्", ["व्या", "प्य", "वि", "श्व", "म्"], ["G", "L", "G", "L", "G"]);
 
             console.log("%c--- 7. [NEW] Vasantatilakā Bug Test ---", "font-weight: bold; margin-top: 10px;");
             test("Vasantatilakā Bug (पान्थासन्)", "पान्थासन्", ["पा", "न्था", "सन्"], ["G", "G", "G"]);
