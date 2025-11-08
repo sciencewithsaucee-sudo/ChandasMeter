@@ -902,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ...vyāpya viśvaṁ (with anusvara)
             test("Sragdharā Bug (व्याप्य विश्वं)", "व्याप्य विश्वं", ["व्या", "प्य", "वि", "श्वं"], ["G", "L", "G", "G"]);
             // ...vyāpya viśvam (with final 'm')
-            test("Sragdharā Bug (व्याप्य विश्वम्)", "व्याप्य विश्वम्", ["व्या", "प्य", "वि", "श्व", "म्"], ["G", "L",G", "L", "G"]);
+            test("Sragdharā Bug (व्याप्य विश्वम्)", "व्याप्य विश्वम्", ["व्या", "प्य", "वि", "श्व", "म्"], ["G", "L","G", "L", "G"]);
 
             console.log("%c--- 7. [NEW] Vasantatilakā Bug Test ---", "font-weight: bold; margin-top: 10px;");
             test("Vasantatilakā Bug (पान्थासन्)", "पान्थासन्", ["पा", "न्था", "सन्"], ["G", "G", "G"]);
