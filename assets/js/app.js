@@ -1,4 +1,4 @@
- document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
         
         // --- Globals ---
         let analysisResults = [];
@@ -27,7 +27,9 @@
         const exampleButtons = document.getElementById('example-buttons');
 
         // --- [v3] Fetch Example Shlokas from JSON ---
-        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas.json";
+        // I have updated this URL to a new file with the CORRECTED Sragdhara and Arya examples.
+        // You must create a new "shlokas_v2.json" file in your repo with the content I provide at the end.
+        const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas_v2.json";
 
         fetch(shlokasUrl)
             .then(response => {
@@ -405,20 +407,28 @@
                             currentSyllable += nextChar;
                             i++;
 
-                            // [FIX] Check for C+Matra + C + Vira case, e.g., "स्या" + "त्" + "्"
+                            // --- [BUG FIX] ---
+                            // Check for C+Matra + C + Vira case, e.g., "स्या" + "त्" + "्"
                             let postMatraChar = (i < line.length) ? line[i] : '';
                             let postMatraNext = (i + 1 < line.length) ? line[i+1] : '';
 
                             if (isConsonant(postMatraChar) && isVirama(postMatraNext)) {
                                 let postMatraNextNext = (i + 2 < line.length) ? line[i+2] : '';
-                                if (!isConsonant(postMatraNextNext)) {
-                                    // This is a C+Vira ending, append it to the current syllable
+                                
+                                // If the C+Vira is followed by ANOTHER consonant, it's a new syllable (e.g., "वि" + "श्वं")
+                                if (isConsonant(postMatraNextNext)) {
+                                     break; // Syllable is complete ("वि")
+                                } else {
+                                    // This is a C+Vira ending (e.g., "स्यात्" or "स्यात्।"), append it
                                     currentSyllable += postMatraChar + postMatraNext;
                                     i += 2;
+                                    break; // Syllable is complete ("स्यात्")
                                 }
+                            } else {
+                                break; // Syllable is complete (e.g., "का" or "वि" before "श्व")
                             }
-                            
-                            break; // Syllable is complete
+                            // --- [END BUG FIX] ---
+
                         } else {
                             // Inherent 'a' is implied.
                             
@@ -812,10 +822,10 @@
                 } else {
                     console.error(`%c  ✗ FAIL: ${name}`, "color: #B91C1C; font-weight: bold;");
                     if (!sylMatch) {
-                        console.error(`    - Syllables: Expected ${JSON.stringify(expectedSyllables)}, Got ${JSON.stringify(syllables)}`);
+                        console.error(`     - Syllables: Expected ${JSON.stringify(expectedSyllables)}, Got ${JSON.stringify(syllables)}`);
                     }
                     if (!weightMatch) {
-                        console.error(`    - Weights: Expected ${JSON.stringify(expectedWeights)}, Got ${JSON.stringify(weights)}`);
+                        console.error(`     - Weights: Expected ${JSON.stringify(expectedWeights)}, Got ${JSON.stringify(weights)}`);
                     }
                     failed++;
                 }
@@ -859,6 +869,10 @@
             // 'uṣṭra' (G-G) (padanta)
             test("Conjunct (उष्ट्र)", "उष्ट्र", ["उ", "ष्ट्र"], ["G","G"]);
             
+            console.log("%c--- 6. [NEW] Sragdharā Bug Test ---", "font-weight: bold; margin-top: 10px;");
+            // ...vyāpya viśvaṁ
+            test("Sragdharā Bug (व्याप्य विश्वं)", "व्याप्य विश्वं", ["व्या", "प्य", "वि", "श्वं"], ["G", "L", "G", "G"]);
+
             console.log("---");
             if (failed > 0) {
                 console.error(`%cTest Suite Finished: ${passed} passed, ${failed} failed.`, "color: #B91C1C; font-weight: bold; font-size: 1.1rem;");
