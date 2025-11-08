@@ -11,6 +11,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* --- GH Pages hard overrides (super specific) --- */
+
+/* Get Started: solid green, pill */
+.hero-buttons a.btn.btn-primary[href="#tool-start"]{
+  background:#006400 !important;
+  border-color:#006400 !important;
+  color:#ffffff !important;
+  border-radius:9999px !important;
+}
+.hero-buttons a.btn.btn-primary[href="#tool-start"]:hover{
+  background:#004d00 !important;
+  border-color:#004d00 !important;
+}
+
+/* How It Works: white bg, green border/text, NOT curved */
+.hero-buttons a.btn.btn-outline[href="#how-it-works"]{
+  background:#ffffff !important;
+  color:#006400 !important;
+  border:2px solid #006400 !important;
+  border-radius:6px !important; /* normal corners */
+}
+.hero-buttons a.btn.btn-outline[href="#how-it-works"]:hover{
+  background:#f0fdf4 !important;
+  color:#004d00 !important;
+  border-color:#004d00 !important;
+}
+
+/* Example buttons: white bg, green border/text, pill */
+#example-buttons > .btn.btn-outline{
+  background:#ffffff !important;
+  color:#006400 !important;
+  border:2px solid #006400 !important;
+  border-radius:9999px !important;
+}
+#example-buttons > .btn.btn-outline:hover{
+  background:#f0fdf4 !important;
+  color:#004d00 !important;
+  border-color:#004d00 !important;
+}
+</style>
     
     <!-- Link to the CSS file from the GitHub repo -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sciencewithsaucee-sudo/ChandasMeter@main/assets/css/style.css">
