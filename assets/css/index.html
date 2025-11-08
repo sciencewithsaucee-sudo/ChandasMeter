@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕉️ ChandasMeter v3 – Formal Sanskrit Meter Engine</title>
+    
+    <meta name="description" content="ChandasMeter v3: A formal grammar-based engine to identify Sanskrit Chandas (varṇa-vṛtta and mātrā-vṛtta) and Ganas using phonetic analysis (Laghu-Guru).">
+    <meta name="keywords" content="Sanskrit, Chandas, Meter, Gana, Varna-vrtta, Matra-vrtta, Arya, Anushtubh, Laghu, Guru, Poetics, Formal Grammar">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link to the CSS file from the GitHub repo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sciencewithsaucee-sudo/ChandasMeter@main/assets/css/style.css">
+</head>
+<body>
+    <input type="file" id="loadTextInput" accept=".txt" style="display: none;">
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>🕉️ ChandasMeter</h1>
+            
+            <p>A Formal Grammar-Based Sanskrit Meter Engine (Varṇa-vṛtta & Mātrā-vṛtta)</p>
+            <div class="hero-buttons">
+                <a href="#tool-start" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Get Started
+                </a>
+                <a href="#how-it-works" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.472-1.303.932-1.303 1.77C7 10.326 7.42 10.686 8.005 10.686c.63 0 1.002-.322 1.002-.916 0-.625-.42-1.015-1.02-1.487-.59-.444-1.107-.818-1.107-1.664 0-.66.524-1.107 1.107-1.107.578 0 1.02.355 1.146.98h.823c-.116-.646-.58-1.14-1.165-1.14-.656 0-1.212.42-1.212 1.076 0 .6.374.933.957 1.371.59.445 1.15.836 1.15 1.752 0 .626-.45 1.137-1.137 1.137-.693 0-1.137-.438-1.137-1.137 0-.017.003-.033.006-.05H5.496zM8 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                    How It Works
+                </a>
+            </div>
+           <div>
+                <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" title="View License on MIT">
+                    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container" id="tool-start">
+        
+        <section class="card">
+            <div class="card-header">
+                <h2>Try an Example</h2>
+            </div>
+            <div class="card-body">
+                <p style="margin-top:0; margin-bottom: 1rem; color: var(--color-text-light);">Click a button to load a well-known shloka and test the analyzer.</p>
+                <div class="button-group" id="example-buttons">
+                    <button class="btn btn-outline" data-meter="anushtubh">Anushtubh (Gita 1.1)</button>
+                    <button class="btn btn-outline" data-meter="upajati">Upajati (Kumārasambhava 1.1)</button>
+                    <button class="btn btn-outline" data-meter="vasantatilaka">Vasantatilaka</button>
+                    <button class="btn btn-outline" data-meter="malini">Malini</button>
+                    <button class="btn btn-outline" data-meter="mandakranta">Mandakranta</button>
+                    <button class="btn btn-outline" data-meter="shardula">Shardula-vikridita</button>
+                    <button class="btn btn-outline" data-meter="sragdhara">Sragdhara</button>
+                    <button class="btn btn-outline" data-meter="arya">Arya (Mātrā-vṛtta)</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Step 1: Input Shloka Text</h2>
+            </div>
+            <div class="card-body">
+                <div class="button-group" style="margin-bottom: 15px;">
+                    <button id="uploadTextButton" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+                        Upload .txt File (Batch Mode)
+                    </button>
+                </div>
+                <textarea id="textInput" placeholder="Paste your Sanskrit shloka(s) here. 
+Please use Devanagari script for accurate analysis.
+Example:
+धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः।
+मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥"></textarea>
+                <span class="error-message" id="textInputError"></span>
+                
+                <div class="options-container">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="padantaGuru" checked>
+                        <label for="padantaGuru">Treat last syllable of line (Pādānta) as Guru</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="analyze-button-container">
+            <div class="button-group" style="justify-content: center;">
+                <button id="analyzeButton" class="btn btn-primary">
+                    <span class="spinner"></span> 
+                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                    <span class="btn-text">Analyze Chandas</span>
+                </button>
+                <button id="clearButton" class="btn btn-danger">Clear All</button>
+                <button id="runTestsButton" class="btn btn-outline" title="Run phonology unit tests in the console">Run Unit Tests</button>
+            </div>
+        </div>
+
+        <section id="results-area" class="hidden">
+            
+            <section id="analysis-summary-card" class="card summary-card">
+                <div class="card-header">
+                        <h2>Analysis Summary</h2>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-item-label">Identified Śloka Meter</span>
+                        <span class="summary-item-value" id="summary-meter-name">N/A</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-item-label">Meter Type</span>
+                        <span class="summary-item-value small" id="summary-meter-type">N/A</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-item-label">Syllable Pattern</span>
+                        <span class="summary-item-value dark" id="summary-syllable-pattern">N/A</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-item-label">Total Lines (Pādas)</span>
+                        <span class="summary-item-value dark" id="summary-total-lines">0</span>
+                    </div>
+                </div>
+            </section>
+
+            <h2 id="resultsTitle">Detailed Pāda Analysis</h2>
+            <div id="resultsHeader" class="results-header">
+                <div class="button-group">
+                    <button id="downloadCsvButton" class="btn btn-outline">Download CSV</button>
+                    <button id="downloadJsonButton" class="btn btn-outline">Download JSON</button>
+                </div>
+            </div>
+            
+            <div id="resultsTableContainer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Syllables</th>
+                            <th>Mātrās</th>
+                            <th>Ganas</th>
+                            <th>Laghu-Guru Visualization</th>
+                            <th>L/G Pattern (Raw)</th>
+                            <th>Identified Meter(s)</th>
+                            <th>Match Status</th>
+                            <th>Pāda (Line Text)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                </table>
+            </div>
+            
+        </section>
+
+        <section id="how-it-works" class="card">
+            <div class="card-header">
+                <h2>How It Works</h2>
+            </div>
+            <div class="card-body">
+                <p>This tool analyzes Sanskrit text based on a formal phonological pipeline and declarative meter grammars.</p>
+                <ol>
+                    <li><strong>Normalization & Segmentation:</strong> The text is normalized (Unicode NFC) and segmented into phonetic syllables (<i>akṣaras</i>), correctly handling conjuncts, viramas, and vocalics (ऋ, ऌ).</li>
+                    <li><strong>Weighting (Laghu/Guru):</strong> Each syllable is deterministically classified as <i>Laghu</i> (L, 1 mātrā) or <i>Guru</i> (G, 2 mātrās) based on formal rule precedence:
+                        <ul>
+                            <li>A syllable is <strong>Guru (G)</strong> if its vowel is long (आ, ई, ऊ, ॠ, ॡ, ए, ऐ, ओ, औ) OR it ends in an <i>Anusvara</i> (ं), <i>Visarga</i> (ः), or final <i>Virama</i> (e.g., in राजन्) OR it is short but followed by a conjunct consonant (<i>saṁyoge-guru</i>).</li>
+                            <li>Otherwise, it is <strong>Laghu (L)</strong>.</li>
+                            <li>The <code>Pādānta Guru</code> option treats the last syllable of any line as Guru by convention.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Grammar Matching:</strong> The resulting pattern is matched against two separate, formal grammar databases:
+                        <ul>
+                            <li><strong>Varṇa-vṛtta (Syllable Meters):</strong> The L/G pattern is matched against a database of meter-specific Regular Expressions (e.g., <i>Vasantatilakā</i>: <code>^G-G-L-G-L-L-L-G-L-L-G-L-G(-G)?$</code>). Special logic handles <i>Anuṣṭubh</i> vipulās and <i>Upajāti</i> mixtures.</li>
+                            <li><strong>Mātrā-vṛtta (Morae Meters):</strong> The total *mātrā* count of each *pāda* is calculated (L=1, G=2) and checked against patterns (e.g., <i>Āryā</i>: `[12, 18, 12, 15]`).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Gana Identification:</strong> For display, the L/G pattern is grouped into <i>Ganas</i> (e.g., <code>ya, ma, ta, ra, ja, bha, na, sa</code>).</li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Link to the JS file from the GitHub repo -->
+    <script src="https://cdn.jsdelivr.net/gh/sciencewithsaucee-sudo/ChandasMeter@main/assets/js/app.js"></script>
+</body>
+</html>
