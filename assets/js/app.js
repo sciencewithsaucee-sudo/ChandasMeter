@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const exampleButtons = document.getElementById('example-buttons');
 
         // --- [v3] Fetch Example Shlokas from JSON ---
-        // THIS IS A NEW URL. YOU MUST CREATE "shlokas_v3.json"
+        // This URL must point to the "shlokas_v3.json" file
         const shlokasUrl = "https://raw.githubusercontent.com/sciencewithsaucee-sudo/ChandasMeter/main/shlokas.json";
 
         fetch(shlokasUrl)
@@ -327,27 +327,40 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         function analyzeLine(line, lineIndex) {
             const syllables = syllabify(line);
-            const weights = getWeights(syllables);
-            const ganas = getGanas(weights);
-            const matraCount = weights.reduce((acc, w) => acc + (w === 'G' ? 2 : 1), 0);
-            const pattern = weights.join('-');
-            const visualization = visualize(syllables, weights);
+
+            // --- [ARYA BUG FIX] ---
+            // We now get weights TWICE.
             
-            // [v3] Match this line against formal grammars
-            const { matches, status } = matchPadaGrammar(pattern, weights, lineIndex);
+            // 1. Get weights for VARNA meters (uses checkbox)
+            // This is used for Ganas, Pattern, and Visualization
+            const varnaWeights = getWeights(syllables, padantaGuruCheckbox.checked);
+            
+            // 2. Get weights for MATRA meters (padantaGuru is ALWAYS false)
+            // This is used ONLY to calculate the matraCount
+            const matraWeights = getWeights(syllables, false); 
+
+            // 3. Calculate matraCount from matraWeights (the "pure" count)
+            const matraCount = matraWeights.reduce((acc, w) => acc + (w === 'G' ? 2 : 1), 0);
+
+            // 4. Use varnaWeights for Varna-vṛtta analysis (display, ganas, etc.)
+            const ganas = getGanas(varnaWeights);
+            const pattern = varnaWeights.join('-');
+            const visualization = visualize(syllables, varnaWeights);
+            const { matches, status } = matchPadaGrammar(pattern, varnaWeights, lineIndex);
+            // --- [END ARYA BUG FIX] ---
 
             return {
                 line: line,
                 lineNumber: lineIndex + 1,
                 count: syllables.length,
-                matraCount: matraCount, // NEW
+                matraCount: matraCount, // This is now the "pure" matra count
                 syllables: syllables,
-                weights: weights,
+                weights: varnaWeights, // These are the weights shown in the table
                 ganas: ganas.join(', '), 
                 pattern: pattern,
                 visualization: visualization,
-                identifiedMeters: matches.join(', ') || 'N/A', // NEW
-                matchStatus: status // NEW
+                identifiedMeters: matches.join(', ') || 'N/A', 
+                matchStatus: status 
             };
         }
 
@@ -406,14 +419,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             currentSyllable += nextChar;
                             i++;
 
-                            // [FIX] Check for C+Matra + C + Vira case, e.g., "स्या" + "त्" + "्"
+                            // [SRAGDHARA BUG FIX]
                             let postMatraChar = (i < line.length) ? line[i] : '';
                             let postMatraNext = (i + 1 < line.length) ? line[i+1] : '';
 
                             if (isConsonant(postMatraChar) && isVirama(postMatraNext)) {
                                 let postMatraNextNext = (i + 2 < line.length) ? line[i+2] : '';
                                 if (!isConsonant(postMatraNextNext)) {
-                                    // This is a C+Vira ending, append it to the current syllable
+                                    // This is a C+Vira ending (e.g., "स्यात्"), append it
                                     currentSyllable += postMatraChar + postMatraNext;
                                     i += 2;
                                 }
@@ -427,15 +440,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             // Check for C+Vira+C (next syllable is a conjunct starting)
                             let nextNextChar = (i + 1 < line.length) ? line[i+1] : '';
-                            let nextNextNextChar = (i + 2 < line.length) ? line[i+2] : '';
                             if (isVirama(nextChar) && isConsonant(nextNextChar)) {
                                 // This is a C+Vira+C conjunct starting.
                                 // The current syllable ends with 'a'.
                                 break; // Break inner loop, the current syllable is complete.
                             }
                             
-                            // [BUGGY FIX REMOVED] The C+C+Vira case was causing
-                            // "श्व" + "म्" to merge. It is now gone.
+                            // [SRAGDHARA BUG FIX 1 REMOVED]
+                            // The buggy "C+C+Vira" logic was removed from here.
                             
                             // Inherent 'a' is implied, and this is the start of the next syllable.
                             break;
@@ -465,9 +477,10 @@ document.addEventListener('DOMContentLoaded', function() {
         /**
          * Robust Laghu/Guru Weighting
          */
-        function getWeights(syllables) {
+        // --- [ARYA BUG FIX] ---
+        // Added 'usePadantaGuru' argument
+        function getWeights(syllables, usePadantaGuru) {
             const weights = [];
-            const padantaGuru = padantaGuruCheckbox.checked;
 
             // Helper to check for short vowels (vocalics included)
             const hasShortVowel = (syl) => {
@@ -481,16 +494,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             };
             
-            // --- [BUG FIX 2] ---
+            // --- [SRAGDHARA BUG FIX 2] ---
             // Helper to check if a syllable *starts* with a conjunct
             const startsWithConjunct = (syl) => {
                 // A syllable starts with a conjunct if a virama (्) exists,
                 // and it is NOT the *last* character.
                 // e.g. "श्व" (ś+्+va) is true. "जन्" (j+a+n+्) is false.
                 const viramaIndex = syl.indexOf('\u094D');
+                // Check if virama exists (> -1) and is not the last char
                 return (viramaIndex > -1 && viramaIndex < syl.length - 1);
             };
-            // --- [END BUG FIX 2] ---
+            // --- [END SRAGDHARA BUG FIX 2] ---
 
 
             for (let i = 0; i < syllables.length; i++) {
@@ -516,7 +530,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Rule 4: Pādānta (last syllable of the line)
-                if (padantaGuru && i === syllables.length - 1) {
+                // --- [ARYA BUG FIX] ---
+                // Now uses the 'usePadantaGuru' argument
+                if (usePadantaGuru && i === syllables.length - 1) {
                     isGuru = true;
                 }
 
@@ -568,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const count = weights.length;
             
             // 1. Check Anuṣṭubh algorithmically
-            if (checkAnushtubhPada(weights)) {
+            if (checkAnushtubhPada(weights, lineIndex)) { // Pass index
                 matches.push('Anuṣṭubh');
                 status = 'Variant (Anuṣṭubh)';
             }
@@ -576,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (count === 16) {
                 const pada1 = weights.slice(0, 8);
                 const pada2 = weights.slice(8, 16);
-                if (checkAnushtubhPada(pada1) && checkAnushtubhPada(pada2)) {
+                if (checkAnushtubhPada(pada1, 0) && checkAnushtubhPada(pada2, 1)) { // Pass index
                     matches.push('Anuṣṭubh (Half-Verse)');
                     status = 'Variant (Anuṣṭubh)';
                 }
@@ -625,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
         /**
          * Special algorithmic check for Anuṣṭubh pādas
          */
-        function checkAnushtubhPada(weights) {
+        function checkAnushtubhPada(weights, lineIndex) { // Index is available
             if (weights.length !== 8) return false;
             
             const fifth = weights[4];
@@ -633,6 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Primary rule: 5th must be Laghu, 6th must be Guru
             return (fifth === 'L' && sixth === 'G');
+            // TODO: Add 7th syllable rule using lineIndex
         }
 
         /**
@@ -671,6 +688,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // --- Check 4: Mātrā-vṛtta (e.g., Āryā) ---
+            // This check now uses the "pure" matraCount (12, 18, 12, 15)
+            // and will correctly identify Āryā.
             if (lines.length === 4) {
                 for (const meterName in MATRA_METER_DATABASE) {
                     const meter = MATRA_METER_DATABASE[meterName];
@@ -713,9 +732,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 row.insertCell().textContent = lineResult.lineNumber;
                 row.insertCell().textContent = lineResult.count;
-                row.insertCell().textContent = lineResult.matraCount;
+                row.insertCell().textContent = lineResult.matraCount; // This will show 12
                 row.insertCell().textContent = lineResult.ganas;
-                row.insertCell().innerHTML = `<div class="meter-pattern">${lineResult.visualization}</div>`;
+                // This visualization will correctly show ti(G) if checkbox is on
+                row.insertCell().innerHTML = `<div class="meter-pattern">${lineResult.visualization}</div>`; 
                 row.insertCell().textContent = lineResult.pattern;
                 row.insertCell().textContent = lineResult.identifiedMeters;
                 row.insertCell().innerHTML = `<span class="status-tag ${statusClass}">${lineResult.matchStatus}</span>`;
@@ -804,7 +824,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function test(name, text, expectedSyllables, expectedWeights) {
                 const syllables = syllabify(text);
-                const weights = getWeights(syllables);
+                // --- [ARYA BUG FIX] ---
+                // Tests should always run with padantaGuru = true
+                const weights = getWeights(syllables, true); 
                 
                 const sylMatch = JSON.stringify(syllables) === JSON.stringify(expectedSyllables);
                 const weightMatch = JSON.stringify(weights) === JSON.stringify(expectedWeights);
@@ -850,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 'kṛṣṇa' (G-G) (padanta)
             test("Vocalic Short (कृष्ण)", "कृष्ण", ["कृ", "ष्ण"], ["G", "G"]);
             // 'pitṝṇām' (L-G-G)
-            test("Vocalic Long (पितॄणाम्)", "पितSृणाम्", ["पि", "तॄ", "णाम्"], ["L", "G", "G"]);
+            test("Vocalic Long (पितॄणाम्)", "पितॄणाम्", ["पि", "तॄ", "णाम्"], ["L", "G", "G"]);
             // 'kḷptam' (G-G)
             test("Vocalic Short L (कॢप्तम्)", "कॢप्तम्", ["कॢ", "प्तम्"], ["G", "G"]);
 
